@@ -811,7 +811,18 @@ struct CANARDWidget : BidooWidget {
 		CANARD *module;
 		void onAction(const event::Action &e) override {
 			std::string dir = module->lastPath.empty() ? asset::user("") : rack::system::getDirectory(module->lastPath);
+#ifdef USING_CARDINAL_NOT_RACK
+			CANARD *module = this->module;
+			async_dialog_filebrowser(false, NULL, dir.c_str(), "Load sample", [module](char* path) {
+				pathSelected(module, path);
+			});
+#else
 			char *path = osdialog_file(OSDIALOG_OPEN, dir.c_str(), NULL, NULL);
+			pathSelected(module, path);
+#endif
+		}
+
+		static void pathSelected(CANARD *module, char* path) {
 			if (path) {
 				module->lastPath = path;
 				module->loading=true;
@@ -832,7 +843,18 @@ struct CANARDWidget : BidooWidget {
 		void onAction(const event::Action &e) override {
 			std::string dir = module->lastPath.empty() ? asset::user("") : rack::system::getDirectory(module->lastPath);
 			std::string fileName = module->waveFileName.empty() ? "temp.wav" : module->waveFileName;
+#ifdef USING_CARDINAL_NOT_RACK
+			CANARD *module = this->module;
+			async_dialog_filebrowser(true, fileName.c_str(), dir.c_str(), "Save sample", [module](char* path) {
+				pathSelected(module, path);
+			});
+#else
 			char *path = osdialog_file(OSDIALOG_SAVE, dir.c_str(), fileName.c_str(), NULL);
+			pathSelected(module, path);
+#endif
+		}
+
+		static void pathSelected(CANARD *module, char* path) {
 			if (path) {
 				module->lastPath = path;
 				if (!module->save) module->save = true;

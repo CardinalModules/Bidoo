@@ -441,7 +441,18 @@ struct OAIWidget : BidooWidget {
   	OAI *module;
   	void onAction(const event::Action &e) override {
   		std::string dir = module->channels[module->currentChannel].lastPath.empty() ? asset::user("") : rack::system::getDirectory(module->channels[module->currentChannel].lastPath);
+#ifdef USING_CARDINAL_NOT_RACK
+		OAI *module = this->module;
+		async_dialog_filebrowser(false, NULL, dir.c_str(), "Load sample", [module](char* path) {
+			pathSelected(module, path);
+		});
+#else
   		char *path = osdialog_file(OSDIALOG_OPEN, dir.c_str(), NULL, NULL);
+  		pathSelected(module, path);
+#endif
+  	}
+
+	static void pathSelected(OAI *module, char* path) {
   		if (path) {
 				module->mylock.lock();
 				module->channels[module->currentChannel].lastPath = path;

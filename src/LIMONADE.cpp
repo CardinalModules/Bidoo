@@ -440,8 +440,11 @@ struct LIMONADE : BidooModule {
 
 	void process(const ProcessArgs &args) override;
 	void loadSample();
+	void loadSamplePath(char* path);
 	void loadFrame();
+	void loadFramePath(char* path);
 	void loadPNG();
+	void loadPNGPath(char* path);
 	void windowWt();
 	void smoothWt();
 	void windowFrame();
@@ -590,37 +593,67 @@ void LIMONADE::resetWaveTable() {
 }
 
 void LIMONADE::loadSample() {
+#ifdef USING_CARDINAL_NOT_RACK
+	async_dialog_filebrowser(false, NULL, NULL, "Load sample", [this](char* path) {
+		loadSamplePath(path);
+	});
+#else
 	osdialog_filters* filters = osdialog_filters_parse(WAV_FILTERS);
 	char *path = osdialog_file(OSDIALOG_OPEN, "", NULL, filters);
+	loadSamplePath(path);
+	osdialog_filters_free(filters);
+#endif
+}
+
+void LIMONADE::loadSamplePath(char* path) {
 	if (path) {
 		lastPath=path;
 		tLoadSample(table, path, frameSize, true);
 		free(path);
 		morphType = -1;
 	}
-	osdialog_filters_free(filters);
 }
 
 void LIMONADE::loadFrame() {
+#ifdef USING_CARDINAL_NOT_RACK
+	async_dialog_filebrowser(false, NULL, NULL, "Load frame", [this](char* path) {
+		loadFramePath(path);
+	});
+#else
 	osdialog_filters* filters = osdialog_filters_parse(WAV_FILTERS);
 	char *path = osdialog_file(OSDIALOG_OPEN, "", NULL, filters);
+	loadFramePath(path);
+	osdialog_filters_free(filters);
+#endif
+}
+
+void LIMONADE::loadFramePath(char* path) {
 	if (path) {
 		lastPath=path;
 		tLoadFrame(table, path, params[INDEX_PARAM].getValue(), true);
 		free(path);
 	}
-	osdialog_filters_free(filters);
 }
 
 void LIMONADE::loadPNG() {
+#ifdef USING_CARDINAL_NOT_RACK
+	async_dialog_filebrowser(false, NULL, NULL, "Load PNG", [this](char* path) {
+		loadPNGPath(path);
+	});
+#else
 	osdialog_filters* filters = osdialog_filters_parse(PNG_FILTERS);
 	char *path = osdialog_file(OSDIALOG_OPEN, "", NULL, filters);
+	loadPNGPath(path);
+	osdialog_filters_free(filters);
+#endif
+}
+
+void LIMONADE::loadPNGPath(char* path) {
 	if (path) {
 		lastPath=path;
 		tLoadPNG(table, path);
 		free(path);
 	}
-	osdialog_filters_free(filters);
 }
 
 void LIMONADE::windowWt() {
@@ -1240,6 +1273,14 @@ struct moduleSaveWavetableAsWavItem : MenuItem {
 	LIMONADE *module;
 	void onAction(const event::Action &e) override {
 		std::string dir = module->lastPath.empty() ? asset::user("") : rack::system::getDirectory(module->lastPath);
+#ifdef USING_CARDINAL_NOT_RACK
+		LIMONADE *module = this->module;
+		float sampleRate = APP->engine->getSampleRate();
+		async_dialog_filebrowser(true, "wavetable.wav", NULL, "Save wavetable", [module, sampleRate](char* path) {
+			tSaveWaveTableAsWave(module->table, sampleRate, path);
+			free(path);
+		});
+#else
 		osdialog_filters* filters = osdialog_filters_parse(WAV_FILTERS);
 		char *path = osdialog_file(OSDIALOG_SAVE, dir.c_str(), "Untitled", filters);
 		if (path) {
@@ -1247,6 +1288,7 @@ struct moduleSaveWavetableAsWavItem : MenuItem {
 			free(path);
 		}
 		osdialog_filters_free(filters);
+#endif
 	}
 };
 
@@ -1254,6 +1296,14 @@ struct moduleSaveFrameAsWavItem : MenuItem {
 	LIMONADE *module;
 	void onAction(const event::Action &e) override {
 		std::string dir = module->lastPath.empty() ? asset::user("") : rack::system::getDirectory(module->lastPath);
+#ifdef USING_CARDINAL_NOT_RACK
+		LIMONADE *module = this->module;
+		float sampleRate = APP->engine->getSampleRate();
+		async_dialog_filebrowser(true, "frame.wav", NULL, "Save frame", [module, sampleRate](char* path) {
+			tSaveFrameAsWave(module->table, sampleRate, path, (size_t)(module->params[LIMONADE::INDEX_PARAM].getValue()*(module->table.nFrames - 1)));
+			free(path);
+		});
+#else
 		osdialog_filters* filters = osdialog_filters_parse(WAV_FILTERS);
 		char *path = osdialog_file(OSDIALOG_SAVE, dir.c_str(), "Untitled", filters);
 		if (path) {
@@ -1261,6 +1311,7 @@ struct moduleSaveFrameAsWavItem : MenuItem {
 			free(path);
 		}
 		osdialog_filters_free(filters);
+#endif
 	}
 };
 
@@ -1268,6 +1319,14 @@ struct moduleSaveWavetableAsPngItem : MenuItem {
 	LIMONADE *module;
 	void onAction(const event::Action &e) override {
 		std::string dir = module->lastPath.empty() ? asset::user("") : rack::system::getDirectory(module->lastPath);
+#ifdef USING_CARDINAL_NOT_RACK
+		LIMONADE *module = this->module;
+		float sampleRate = APP->engine->getSampleRate();
+		async_dialog_filebrowser(true, "wavetable.png", dir.c_str(), "Save PNG", [module, sampleRate](char* path) {
+			tSaveWaveTableAsPng(module->table, sampleRate, path);
+			free(path);
+		});
+#else
 		osdialog_filters* filters = osdialog_filters_parse(PNG_FILTERS);
 		char *path = osdialog_file(OSDIALOG_SAVE, dir.c_str(), "Untitled", filters);
 		if (path) {
@@ -1275,6 +1334,7 @@ struct moduleSaveWavetableAsPngItem : MenuItem {
 			free(path);
 		}
 		osdialog_filters_free(filters);
+#endif
 	}
 };
 
