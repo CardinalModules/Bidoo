@@ -1277,8 +1277,10 @@ struct moduleSaveWavetableAsWavItem : MenuItem {
 		LIMONADE *module = this->module;
 		float sampleRate = APP->engine->getSampleRate();
 		async_dialog_filebrowser(true, "wavetable.wav", NULL, "Save wavetable", [module, sampleRate](char* path) {
-			tSaveWaveTableAsWave(module->table, sampleRate, path);
-			free(path);
+			if (path) {
+				tSaveWaveTableAsWave(module->table, sampleRate, path);
+				free(path);
+			}
 		});
 #else
 		osdialog_filters* filters = osdialog_filters_parse(WAV_FILTERS);
@@ -1300,8 +1302,10 @@ struct moduleSaveFrameAsWavItem : MenuItem {
 		LIMONADE *module = this->module;
 		float sampleRate = APP->engine->getSampleRate();
 		async_dialog_filebrowser(true, "frame.wav", NULL, "Save frame", [module, sampleRate](char* path) {
-			tSaveFrameAsWave(module->table, sampleRate, path, (size_t)(module->params[LIMONADE::INDEX_PARAM].getValue()*(module->table.nFrames - 1)));
-			free(path);
+			if (path) {
+				tSaveFrameAsWave(module->table, sampleRate, path, (size_t)(module->params[LIMONADE::INDEX_PARAM].getValue()*(module->table.nFrames - 1)));
+				free(path);
+			}
 		});
 #else
 		osdialog_filters* filters = osdialog_filters_parse(WAV_FILTERS);
@@ -1323,8 +1327,10 @@ struct moduleSaveWavetableAsPngItem : MenuItem {
 		LIMONADE *module = this->module;
 		float sampleRate = APP->engine->getSampleRate();
 		async_dialog_filebrowser(true, "wavetable.png", dir.c_str(), "Save PNG", [module, sampleRate](char* path) {
-			tSaveWaveTableAsPng(module->table, sampleRate, path);
-			free(path);
+			if (path) {
+				tSaveWaveTableAsPng(module->table, sampleRate, path);
+				free(path);
+			}
 		});
 #else
 		osdialog_filters* filters = osdialog_filters_parse(PNG_FILTERS);
