@@ -12,7 +12,6 @@
 #define MINIMP3_IMPLEMENTATION
 #include "dep/minimp3/minimp3.h"
 
-
 using namespace std;
 
 const int DATASIZE = 220000000;

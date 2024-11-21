@@ -1,3 +1,32 @@
+### v2.1.1 (06/02/2023)
+- zOù MAï and enCORE can copy/paste/randomize/erase per page thanks to Tavis
+
+### v2.1.0 (12/01/2023)
+- ANTn minimp3 config change for SIMD optimizations
+
+### v2.0.29 (24/11/2022)
+- ANTn minimp3 config change for OSX build compability
+
+### v2.0.28 (22/11/2022)
+- cANARd fix zoom issue
+
+### v2.0.27 (30/10/2022)
+- πlOT copy/paste scenes available on top and bottom scene buttons (can be applied between banks)
+- πlOT controls behavior can be switched between "constant override" (default mode) i.e. it keeps its value until a scene is saved or the morph button is clicked, and not "constant override" meaning that the control jumps to its value when changing scene.
+
+### v2.0.26 (11/10/2022)
+- fix Zou triggers issue
+
+### v2.0.25 (9/10/2022)
+- ratEaU is available
+
+### v2.0.24 (1/10/2022)
+- πlOT fix OSX build
+
+### v2.0.23 (1/10/2022)
+- πlOT fix on gate mode
+- rabBIT randomize implementation
+
 ### v2.0.22 (15/09/2022)
 - πlOT can add masking tape on top of controls in order to display labels (use menu)
 
